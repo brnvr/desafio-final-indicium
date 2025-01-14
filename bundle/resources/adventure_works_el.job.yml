@@ -1,0 +1,42 @@
+resources:
+  jobs:
+    adventure_works_el_job:
+      name: adventure_works_el_job
+
+      email_notifications:
+        on_failure:
+          - bruno.vieira@indicium.tech
+
+      parameters:
+        - name: mssql_host
+          default: 54.160.188.238
+
+        - name: mssql_door
+          default: 4563
+
+        - name: mssql_database
+          default: AdventureWorks
+
+      tasks:
+        - task_key: mssql_to_raw
+          existing_cluster_id: 0114-120134-85ri2w59
+          notebook_task:
+            notebook_path: ../src/mssql_to_raw.ipynb
+
+        - task_key: raw_to_stg
+          existing_cluster_id: 0114-120134-85ri2w59
+          depends_on: 
+            - task_key: mssql_to_raw
+          notebook_task:
+            notebook_path: ../src/raw_to_stg.ipynb
+
+targets:
+  prod:
+    resources:
+      jobs:
+        adventure_works_el_job:
+          trigger:
+            # Run periodically only in prod
+            periodic:
+              interval: 1
+              unit: DAYS

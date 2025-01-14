@@ -1,7 +1,7 @@
 # This is a Databricks asset bundle definition for bundle.
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 bundle:
-  name: bundle
+  name: adventure_works
 
 include:
   - resources/*.yml
@@ -15,16 +15,16 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://adb-7941093640821140.0.azuredatabricks.net
+      host: https://adb-1770141292543280.0.azuredatabricks.net
 
   prod:
     mode: production
     workspace:
-      host: https://adb-7941093640821140.0.azuredatabricks.net
-      # We explicitly specify /Workspace/Users/bruno.vieira@consulting-for.edenred.com to make sure we only have a single copy.
-      root_path: /Workspace/Users/bruno.vieira@consulting-for.edenred.com/.bundle/${bundle.name}/${bundle.target}
+      host: https://adb-1770141292543280.0.azuredatabricks.net
+      # We explicitly specify /Workspace/Users/bruno.vieira@indicium.tech to make sure we only have a single copy.
+      root_path: /Workspace/Users/bruno.vieira@indicium.tech/.bundle/${bundle.name}/${bundle.target}
     permissions:
-      - user_name: bruno.vieira@consulting-for.edenred.com
+      - user_name: bruno.vieira@indicium.tech
         level: CAN_MANAGE
     run_as:
-      user_name: bruno.vieira@consulting-for.edenred.com
+      user_name: bruno.vieira@indicium.tech
