@@ -12,10 +12,25 @@ resources:
           default: 54.160.188.238
 
         - name: mssql_door
-          default: 4563
+          default: "4563"
 
         - name: mssql_database
           default: AdventureWorks
+
+        - name: ctr_catalog_name
+          default: bruno_vieira_ctr
+
+        - name: raw_catalog_name
+          default: bruno_vieira_raw
+
+        - name: stg_catalog_name
+          default: bruno_vieira_stg
+
+        - name: secret_scope
+          default: bruno_vieira_adw
+
+        - name: start_date
+          default: "{{ (job.start_time - timedelta(days=1)).[iso_date] }}"
 
       tasks:
         - task_key: mssql_to_raw
