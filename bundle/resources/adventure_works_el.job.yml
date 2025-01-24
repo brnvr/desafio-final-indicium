@@ -11,7 +11,7 @@ resources:
         - name: mssql_host
           default: 54.160.188.238
 
-        - name: mssql_door
+        - name: mssql_port
           default: "4563"
 
         - name: mssql_database
@@ -29,12 +29,23 @@ resources:
         - name: secret_scope
           default: bruno_vieira_adw
 
-        - name: start_date
-          default: "{{ (job.start_time - timedelta(days=1)).[iso_date] }}"
+        - name: run_date
+          default: "{{(job.start_time.[iso_date]}}"
+
+        - name: managed_location
+          default: abfss://ted-desafio-final-lh-data@indstadblake.dfs.core.windows.net/desafio_final_lh
 
       tasks:
+        - task_key: init
+          existing_cluster_id: 0114-120134-85ri2w59
+          notebook_task:
+            notebook_path:
+              ../src/init.ipynb
+
         - task_key: mssql_to_raw
           existing_cluster_id: 0114-120134-85ri2w59
+          depends_on: 
+            - task_key: init
           notebook_task:
             notebook_path: ../src/mssql_to_raw.ipynb
 
@@ -43,7 +54,14 @@ resources:
           depends_on: 
             - task_key: mssql_to_raw
           notebook_task:
-            notebook_path: ../src/raw_to_stg.ipynb
+            notebook_path: ../src/raw_to_stg/base.ipynb
+
+        - task_key: raw_to_stg__sales__store
+          existing_cluster_id: 0114-120134-85ri2w59
+          depends_on: 
+            - task_key: mssql_to_raw
+          notebook_task:
+            notebook_path: ../src/raw_to_stg/sales/store.ipynb
 
 targets:
   prod:
