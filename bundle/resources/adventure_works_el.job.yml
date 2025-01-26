@@ -40,28 +40,21 @@ resources:
           existing_cluster_id: 0114-120134-85ri2w59
           notebook_task:
             notebook_path:
-              ../src/init.ipynb
+              ../src/tasks/init.ipynb
 
         - task_key: mssql_to_raw
           existing_cluster_id: 0114-120134-85ri2w59
           depends_on: 
             - task_key: init
           notebook_task:
-            notebook_path: ../src/mssql_to_raw.ipynb
+            notebook_path: ../src/tasks/mssql_to_raw.ipynb
 
         - task_key: raw_to_stg
           existing_cluster_id: 0114-120134-85ri2w59
           depends_on: 
             - task_key: mssql_to_raw
           notebook_task:
-            notebook_path: ../src/raw_to_stg/base.ipynb
-
-        - task_key: raw_to_stg__sales__store
-          existing_cluster_id: 0114-120134-85ri2w59
-          depends_on: 
-            - task_key: mssql_to_raw
-          notebook_task:
-            notebook_path: ../src/raw_to_stg/sales/store.ipynb
+            notebook_path: ../src/tasks/raw_to_stg.ipynb
 
 targets:
   prod:

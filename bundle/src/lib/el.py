@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union, Dict
 from pyspark.sql import DataFrame
 from databricks.sdk.runtime import *
 from delta.tables import DeltaTable
@@ -16,17 +16,18 @@ class DataLoader:
         self,
         schema_name: str,
         table_name: str,
-        primary_key: list[str],
-        selected = None
+        primary_key: Union[list[str], Dict[str, str]]
     ):
         self.df = None
         self.schema_name = schema_name
         self.table_name = table_name
         self.primary_key = primary_key  
-        self.selected = selected      
 
     def __build_merge_condition__(self):
-        condition_list = [f"target.{pk} = source.{pk}" for pk in self.primary_key]
+        if isinstance(self.primary_key, dict):
+            condition_list = [f"target.{v} = source.{k}" for k, v in self.primary_key.items()]
+        else:
+            condition_list = [f"target.{pk} = source.{pk}" for pk in self.primary_key]
 
         return " AND ".join(condition_list)
     
@@ -61,18 +62,19 @@ class DataLoader:
         return dl
     
     def apply(self, callable:Callable[[DataFrame], DataFrame]):
+        if self.df is None:
+            raise ValueError("Data not extracted")
+        
         self.df = callable(self.df)
-
-        return self
-
-    def select(self, *selected):
-        self.selected = selected
 
         return self
 
     def load_into(self, target_table:str):
         if self.df is None:
             raise ValueError("Data not extracted")
+        
+        if self.df.count() == 0:
+           return 
         
         if spark.catalog.tableExists(target_table):
             self.__merge_into__(target_table)
@@ -142,10 +144,12 @@ class DeltaDataLoader(DataLoader):
         else:
             table_full_name = f"{self.catalog_name}.{self.schema_name}.{self.table_name}"
 
-        if filter is None:
-            self.df = spark.table(table_full_name)
-            
-        else:
-            self.df = spark.table(table_full_name).where(filter)
+        self.df = spark.table(table_full_name)
+
+        if self.selected is not None:
+            self.df = self.df.select(self.selected)
+        
+        if filter is not None:
+            self.df = self.df.where(filter)
 
         return self
