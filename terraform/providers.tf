@@ -1,4 +1,4 @@
 provider "databricks" {
-  host  = "https://${var.databricks_instance}.azuredatabricks.net"
+  host  = var.databricks_host
   token = var.databricks_token
 }

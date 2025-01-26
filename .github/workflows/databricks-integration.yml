@@ -1,0 +1,40 @@
+name: Deploy Databricks asset bundle
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-databricks-cli:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11.9'
+
+      - name: Install Databricks CLI
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew tap databricks/tap
+          brew install databricks
+
+      - name: Configure Databricks CLI
+        run: |
+          databricks configure --token <<EOF
+          ${DATABRICKS_HOST}
+          ${DATABRICKS_TOKEN}
+          EOF
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+      - name: Deploy Databricks asset bundle
+        run: |
+          cd bundle
+          databricks bundle deploy --target prod
