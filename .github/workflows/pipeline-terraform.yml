@@ -29,7 +29,9 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform plan -out=tfplan
+          terraform plan -out=tfplan \
+            -var="databricks_host=${DATABRICKS_HOST}" \
+            -var="databricks_token=${DATABRICKS_TOKEN}"
           terraform apply tfplan \
             -var="databricks_host=${DATABRICKS_HOST}" \
             -var="databricks_token=${DATABRICKS_TOKEN}"
