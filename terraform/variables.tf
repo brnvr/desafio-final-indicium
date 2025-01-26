@@ -1,5 +1,5 @@
-variable "databricks_instance" {
-  description = "Instância do Databricks"
+variable "databricks_host" {
+  description = "Host do Databricks"
   type        = string
 }
 
