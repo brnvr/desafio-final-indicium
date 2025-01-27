@@ -10,7 +10,7 @@ def column_names_to_snakecase(df: DataFrame):
 
 
 def primary_key_column_names_renamed(
-    df: DataFrame, primary_key_prev: list[str], primary_key_new: list[str]):
+        df: DataFrame, primary_key_prev: list[str], primary_key_new: list[str]):
     if primary_key_new is None:
         return df
 
