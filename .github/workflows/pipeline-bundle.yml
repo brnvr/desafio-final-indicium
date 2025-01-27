@@ -31,6 +31,8 @@ jobs:
   deploy-bundle:
     runs-on: ubuntu-latest
 
+    needs: lint-check
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
