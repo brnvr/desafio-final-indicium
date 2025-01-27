@@ -114,7 +114,7 @@ class MSSqlDataLoader(DataLoader):
 
         return f"""
             (select {select}
-            from {self.schema_name}.{self.table_name} 
+            from {self.schema_name}.{self.table_name}
             where {filter}) as {self.table_name}
         """
 
