@@ -54,9 +54,4 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy Databricks asset bundle
-        run: |
-          if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
-            databricks bundle deploy --target dev
-          else
-            databricks bundle deploy --target prod
-          fi
+        run: databricks bundle deploy --target dev
