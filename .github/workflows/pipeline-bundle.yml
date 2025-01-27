@@ -23,7 +23,9 @@ jobs:
         run: pip install flake8
 
       - name: Run Flake8
-        run: flake8 .
+        run: |
+          cd bundle
+          flake8 .
 
   deploy-bundle:
     runs-on: ubuntu-latest
@@ -34,12 +36,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: lol1
-        run: echo $(pwd)
-
-      - name: lol2
-        run: echo $(pwd)
-        
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 

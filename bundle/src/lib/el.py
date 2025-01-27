@@ -114,7 +114,7 @@ class MSSqlDataLoader(DataLoader):
 
         return f"""
             (select {select}
-            from {self.schema_name}.{self.table_name}
+            from {self.schema_name}.{self.table_name} 
             where {filter}) as {self.table_name}
         """
 
@@ -151,14 +151,11 @@ class DeltaDataLoader(DataLoader):
 
     def extract(self, filter=None):
         if self.catalog_name is None:
-            table_full_name = f"{self.schema_name}.{self.table_name}"
+            name = f"{self.schema_name}.{self.table_name}"
         else:
-            table_full_name = f"{
-                self.catalog_name}.{
-                self.schema_name}.{
-                self.table_name}"
+            name = f"{self.catalog_name}.{self.schema_name}.{self.table_name}"
 
-        self.df = spark.table(table_full_name)
+        self.df = spark.table(name)
 
         if self.selected is not None:
             self.df = self.df.select(self.selected)
