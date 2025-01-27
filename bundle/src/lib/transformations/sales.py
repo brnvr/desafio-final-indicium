@@ -1,5 +1,4 @@
 from pyspark.sql import DataFrame
-from databricks.sdk.runtime import *
 from pyspark.sql.functions import from_xml
 
 

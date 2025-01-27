@@ -1,6 +1,6 @@
 from typing import Callable, Union, Dict
 from pyspark.sql import DataFrame
-from databricks.sdk.runtime import *
+from databricks.sdk.runtime import spark
 from delta.tables import DeltaTable
 
 
@@ -112,7 +112,11 @@ class MSSqlDataLoader(DataLoader):
         select = "*" if self.selected is None else ", ".join(self.selected)
         filter = "1 = 1" if filter is None else filter
 
-        return f"(select {select} from {self.schema_name}.{self.table_name} where {filter}) as {self.table_name}"
+        return f"""
+            (select {select} 
+            from {self.schema_name}.{self.table_name} 
+            where {filter}) as {self.table_name}
+        """
 
     def extract(self, filter: str = None):
         self.df = (spark.read.format("sqlserver")

@@ -1,11 +1,11 @@
-from databricks.sdk.runtime import *
+from databricks.sdk.runtime import spark
 from pyspark.sql.functions import current_timestamp
-from pyspark.sql.types import *
+from pyspark.sql.types import StructField, StringType, IntegerType, StructType
 
 
 class Log:
     def __init__(self, catalog_name: str, schema_name: str,
-                 table_name: str, movements: int, error: str = None):
+        table_name: str, movements: int, error: str = None):
         self.catalog_name = catalog_name
         self.schema_name = schema_name
         self.table_name = table_name
