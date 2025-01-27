@@ -36,9 +36,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: lol1
+        run: echo $(pwd)
         
       - name: Move to bundle directory
         run: cd bundle
+
+      - name: lol2
+        run: echo $(pwd)
         
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
