@@ -113,8 +113,8 @@ class MSSqlDataLoader(DataLoader):
         filter = "1 = 1" if filter is None else filter
 
         return f"""
-            (select {select} 
-            from {self.schema_name}.{self.table_name} 
+            (select {select}
+            from {self.schema_name}.{self.table_name}
             where {filter}) as {self.table_name}
         """
 
