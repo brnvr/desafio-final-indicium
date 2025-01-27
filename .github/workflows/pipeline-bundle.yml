@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  setup-databricks-cli:
+  deploy-bundle:
     runs-on: ubuntu-latest
 
     steps:
