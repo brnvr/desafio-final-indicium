@@ -19,9 +19,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Move to bundle directory
-        run: cd bundle
-
       - name: Install Flake8
         run: pip install flake8
 
@@ -39,9 +36,6 @@ jobs:
 
       - name: lol1
         run: echo $(pwd)
-        
-      - name: Move to bundle directory
-        run: cd bundle
 
       - name: lol2
         run: echo $(pwd)
@@ -60,4 +54,6 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy Databricks asset bundle
-        run: databricks bundle deploy --target dev
+        run: |
+          cd bundle
+          databricks bundle deploy --target dev
