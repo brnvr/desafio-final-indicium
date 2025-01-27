@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  deploy-bundle:
+  lint-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +28,19 @@ jobs:
       - name: Run Flake8
         run: flake8 .
 
+  deploy-bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Move to bundle directory
+        run: cd bundle
 
       - name: Configure Databricks CLI
         run: |
