@@ -7,7 +7,7 @@ def column_names_to_snakecase(df: DataFrame):
     Conforms all column names in DataFrame to snake_case.
 
     Args:
-        df (DataFrame): The DataFrame to be transformed.a
+        df (DataFrame): The DataFrame to be transformed.
 
     Returns:
         DataFrame
