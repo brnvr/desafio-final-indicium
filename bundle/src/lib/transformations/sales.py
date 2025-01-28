@@ -40,7 +40,16 @@ def transform_stores(df: DataFrame):
 
 
 def transform_store_demographics(df: DataFrame):
-    # demographics_schema = schema_of_xml(df.first()["Demographics"])
+    """
+    Flattens the 'Demographics' column of the Store DataFrame, which is an XML,
+    and returns it into a new DataFrame.
+
+    Args:
+        df (DataFrame): The 'Store' DataFrame
+
+    Returns:
+        DataFrame: Demographics dataframe
+    """
     demographics_schema = """
         AnnualRevenue DECIMAL(18,2),
         AnnualSales INT,

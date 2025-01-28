@@ -1,11 +1,23 @@
 from typing import Callable, Union, Dict
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, Column
 from databricks.sdk.runtime import spark
 from delta.tables import DeltaTable
-
+from abc import ABC, abstractmethod
 
 class SqlConnectionData:
-    def __init__(self, host, port, database, username, password):
+    """
+    Encapsulates connection details required to connect to a SQL
+    database.
+
+    Attributes:
+        host (str): The hostname or IP address of the SQL database server.
+        port (str): The port number on which the SQL database server is
+            listening.
+        database (str): The name of the database to connect to.
+        username (str): The username to authenticate with the SQL database.
+        password (str): The password associated with the username.
+    """
+    def __init__(self, host:str, port:str, database:str, username:str, password:str):
         self.host = host
         self.port = port
         self.database = database
@@ -13,7 +25,19 @@ class SqlConnectionData:
         self.password = password
 
 
-class DataLoader:
+class DataLoader(ABC):
+    """
+    Members of this class can extract data from different sources and load
+    them incrementally into delta tables. 
+
+    Attributes:
+        table_name (str): The name of the table to be extracted.
+        schema_name (str): The name of the schema which contains the table.
+        primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
+            of columns that compose the primary key. If it's a dictionary, 
+            then each key represents the column name in the source table and
+            each value represents the column name in the target table.
+    """
     def __init__(
         self,
         schema_name: str,
@@ -55,7 +79,16 @@ class DataLoader:
                 )
 
     @staticmethod
-    def fromDataFrame(df, *primary_key):
+    def fromDataFrame(df:DataFrame, *primary_key):
+        """
+        Creates the DataLoader from an existing spark DataFrame.
+
+        Args:
+            df (DataFrame): The spark DataFrame.
+
+        Returns:
+            DataLoader: The created DataLoader
+        """
         dl = DataLoader(
             schema_name=None,
             table_name=None,
@@ -65,8 +98,33 @@ class DataLoader:
         dl.df = df
 
         return dl
+    
+    @abstractmethod
+    def extract(self, filter):
+        """
+        To be implemented:
+            Set self.df to a DataFrame created from the source table.
+
+        Args:
+            filter: The filter for the extraction, or None for no filtering.
+
+        Returns:
+            DataLoader
+        """
+        pass
 
     def apply(self, callable: Callable[[DataFrame], DataFrame]):
+        """
+        Transforms self.df based on a transformation function. To be used after
+        extraction and before loading.
+
+        Args:
+            callable (Callable[[DataFrame], DataFrame]): Function that applies
+                a transformation to a spark DataFrame.
+
+        Returns:
+           DataLoader 
+        """
         if self.df is None:
             raise ValueError("Data not extracted")
 
@@ -75,6 +133,15 @@ class DataLoader:
         return self
 
     def load_into(self, target_table: str):
+        """
+        Loads extracted data into a target table.
+
+        Args:
+            target_table (str): The fully qualified name of the target table.
+
+        Returns:
+            DataLoader
+        """
         if self.df is None:
             raise ValueError("Data not extracted")
 
@@ -93,6 +160,21 @@ class DataLoader:
 
 
 class MSSqlDataLoader(DataLoader):
+    """
+    DataLoader which sources data from SQL Server.
+
+    Attributes:
+        table_name (str): The name of the table to be extracted.
+        schema_name (str): The name of the schema which contains the table.
+        primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
+            of columns that compose the primary key. If it's a dictionary, 
+            then each key represents the column name in the source table and
+            each value represents the column name in the target table.
+        connection_data (SqlConnectionData): An instance of the
+            SqlConnectionData class.
+        selected (list[str]): A list of columns to select, or None for all
+            columns.
+    """
     def __init__(
         self,
         schema_name: str,
@@ -119,6 +201,16 @@ class MSSqlDataLoader(DataLoader):
         """
 
     def extract(self, filter: str = None):
+        """
+        Extracts data from the SQL Server database table.
+
+        Args:
+            filter (str): A SQL expression used for filtering data, or None for
+            no filtering.
+    
+        Returns:
+            DataLoader
+        """
         self.df = (spark.read.format("sqlserver")
                    .option("encrypt", False)
                    .option("host", self.connection_data.host)
@@ -134,6 +226,21 @@ class MSSqlDataLoader(DataLoader):
 
 
 class DeltaDataLoader(DataLoader):
+    """
+    DataLoader which sources data from Delta tables.
+
+    Attributes:
+        table_name (str): The name of the table to be extracted.
+        schema_name (str): The name of the schema which contains the table.
+        primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
+            of columns that compose the primary key. If it's a dictionary, 
+            then each key represents the column name in the source table and
+            each value represents the column name in the target table.
+        selected (list[str]): A list of columns to select, or None for all
+            columns.
+        catalog_name (str): The name of the Unity Catalog catalog where the
+            data is located.
+    """
     def __init__(
         self,
         schema_name: str,
@@ -149,7 +256,17 @@ class DeltaDataLoader(DataLoader):
         self.primary_key = primary_key
         self.catalog_name = catalog_name
 
-    def extract(self, filter=None):
+    def extract(self, filter: Union[str, Column]=None):
+        """
+        Extracts data from the Delta table.
+
+        Args:
+            filter (str): A SQL expression or spark Column expression for 
+            filtering data, or None for no filtering.
+       
+        Returns:
+            DataLoader
+        """
         if self.catalog_name is None:
             name = f"{self.schema_name}.{self.table_name}"
         else:
