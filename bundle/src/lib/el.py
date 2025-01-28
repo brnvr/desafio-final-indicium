@@ -85,7 +85,7 @@ class DataLoader(ABC):
     @staticmethod
     def fromDataFrame(df: DataFrame, *primary_key):
         """
-        Creates the DataLoader from an existing spark DataFrame.
+        Creates the DataLoader from an existing spark DataFrame.a
 
         Args:
             df (DataFrame): The spark DataFrame.
