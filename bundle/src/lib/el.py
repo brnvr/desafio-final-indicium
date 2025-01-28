@@ -4,6 +4,7 @@ from databricks.sdk.runtime import spark
 from delta.tables import DeltaTable
 from abc import ABC, abstractmethod
 
+
 class SqlConnectionData:
     """
     Encapsulates connection details required to connect to a SQL
@@ -17,7 +18,9 @@ class SqlConnectionData:
         username (str): The username to authenticate with the SQL database.
         password (str): The password associated with the username.
     """
-    def __init__(self, host:str, port:str, database:str, username:str, password:str):
+
+    def __init__(self, host: str, port: str, database: str,
+                 username: str, password: str):
         self.host = host
         self.port = port
         self.database = database
@@ -28,16 +31,17 @@ class SqlConnectionData:
 class DataLoader(ABC):
     """
     Members of this class can extract data from different sources and load
-    them incrementally into delta tables. 
+    them incrementally into delta tables.
 
     Attributes:
         table_name (str): The name of the table to be extracted.
         schema_name (str): The name of the schema which contains the table.
         primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
-            of columns that compose the primary key. If it's a dictionary, 
+            of columns that compose the primary key. If it's a dictionary,
             then each key represents the column name in the source table and
             each value represents the column name in the target table.
     """
+
     def __init__(
         self,
         schema_name: str,
@@ -79,7 +83,7 @@ class DataLoader(ABC):
                 )
 
     @staticmethod
-    def fromDataFrame(df:DataFrame, *primary_key):
+    def fromDataFrame(df: DataFrame, *primary_key):
         """
         Creates the DataLoader from an existing spark DataFrame.
 
@@ -98,7 +102,7 @@ class DataLoader(ABC):
         dl.df = df
 
         return dl
-    
+
     @abstractmethod
     def extract(self, filter):
         """
@@ -123,7 +127,7 @@ class DataLoader(ABC):
                 a transformation to a spark DataFrame.
 
         Returns:
-           DataLoader 
+           DataLoader
         """
         if self.df is None:
             raise ValueError("Data not extracted")
@@ -167,7 +171,7 @@ class MSSqlDataLoader(DataLoader):
         table_name (str): The name of the table to be extracted.
         schema_name (str): The name of the schema which contains the table.
         primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
-            of columns that compose the primary key. If it's a dictionary, 
+            of columns that compose the primary key. If it's a dictionary,
             then each key represents the column name in the source table and
             each value represents the column name in the target table.
         connection_data (SqlConnectionData): An instance of the
@@ -175,6 +179,7 @@ class MSSqlDataLoader(DataLoader):
         selected (list[str]): A list of columns to select, or None for all
             columns.
     """
+
     def __init__(
         self,
         schema_name: str,
@@ -207,7 +212,7 @@ class MSSqlDataLoader(DataLoader):
         Args:
             filter (str): A SQL expression used for filtering data, or None for
             no filtering.
-    
+
         Returns:
             DataLoader
         """
@@ -233,7 +238,7 @@ class DeltaDataLoader(DataLoader):
         table_name (str): The name of the table to be extracted.
         schema_name (str): The name of the schema which contains the table.
         primary_key (Union[list[str], Dict[str, str]]): A list or dictionary
-            of columns that compose the primary key. If it's a dictionary, 
+            of columns that compose the primary key. If it's a dictionary,
             then each key represents the column name in the source table and
             each value represents the column name in the target table.
         selected (list[str]): A list of columns to select, or None for all
@@ -241,6 +246,7 @@ class DeltaDataLoader(DataLoader):
         catalog_name (str): The name of the Unity Catalog catalog where the
             data is located.
     """
+
     def __init__(
         self,
         schema_name: str,
@@ -256,14 +262,14 @@ class DeltaDataLoader(DataLoader):
         self.primary_key = primary_key
         self.catalog_name = catalog_name
 
-    def extract(self, filter: Union[str, Column]=None):
+    def extract(self, filter: Union[str, Column] = None):
         """
         Extracts data from the Delta table.
 
         Args:
-            filter (str): A SQL expression or spark Column expression for 
+            filter (str): A SQL expression or spark Column expression for
             filtering data, or None for no filtering.
-       
+
         Returns:
             DataLoader
         """

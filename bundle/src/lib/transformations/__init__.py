@@ -30,7 +30,7 @@ def column_names_renamed(
         df (DataFrame): The DataFrame to be transformed.
         columns_prev (list[str]): List of column names to be renamed
         columns_new (list[str]): List of new column names. It must have the
-            same length as columns_prev.  
+            same length as columns_prev.
 
     Returns:
         DataFrame
