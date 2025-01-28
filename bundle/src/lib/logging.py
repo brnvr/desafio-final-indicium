@@ -8,20 +8,36 @@ class Log:
     Log information from data movements.
 
     Attributes:
-        catalog_name (str): The Name of the Unity Catalog catalog where the
-            target table is located.
-        schema_name (str): The schema name.
-        table_name (str): The table name.
+        source_catalog_name (str): The Name of the Unity Catalog catalog where
+            the source table is located.
+        source_schema_name (str): The source schema.
+        source_table_name (str): The source table.
+        target_catalog_name (str): The Name of the Unity Catalog catalog where
+            the target table is located.
+        target_schema_name (str): The target schema.
+        target_table_name (str): The target table.
         movements (int): The number of movements, i.e., rows ingested by the
             source table.
         error (str): An error message, if the ingestion failed, or None, if it
         was successful.
     """
-    def __init__(self, catalog_name: str, schema_name: str,
-                 table_name: str, movements: int, error: str = None):
-        self.catalog_name = catalog_name
-        self.schema_name = schema_name
-        self.table_name = table_name
+    def __init__(
+            self, 
+            target_catalog_name: str,
+            target_schema_name: str,
+            target_table_name: str,
+            source_catalog_name: str, 
+            source_schema_name: str,
+            source_table_name: str, 
+            movements: int = None, 
+            error: str = None
+        ):
+        self.source_catalog_name = source_catalog_name
+        self.source_schema_name = source_schema_name
+        self.source_table_name = source_table_name
+        self.target_catalog_name = target_catalog_name
+        self.target_schema_name = target_schema_name
+        self.target_table_name = target_table_name
         self.error = error
         self.movements = movements
 
@@ -37,9 +53,12 @@ class Logger:
         self.table_name = table_name
 
     SCHEMA = StructType([
-        StructField("catalog_name", StringType(), False),
-        StructField("schema_name", StringType(), False),
-        StructField("table_name", StringType(), False),
+        StructField("source_catalog_name", StringType(), False),
+        StructField("source_schema_name", StringType(), False),
+        StructField("source_table_name", StringType(), False),
+        StructField("target_catalog_name", StringType(), False),
+        StructField("target_schema_name", StringType(), False),
+        StructField("target_table_name", StringType(), False),
         StructField("error", StringType(), True),
         StructField("movements", IntegerType(), False),
     ])
@@ -52,9 +71,12 @@ class Logger:
             logs (list[Log]): A list of data movement logs.
         """
         data = [
-            (log.catalog_name,
-             log.schema_name,
-             log.table_name,
+            (log.source_catalog_name,
+             log.source_schema_name,
+             log.source_table_name,
+             log.target_catalog_name,
+             log.target_schema_name,
+             log.target_table_name,
              log.error,
              log.movements) for log in logs]
 
