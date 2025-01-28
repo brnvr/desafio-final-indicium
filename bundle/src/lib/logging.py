@@ -55,7 +55,7 @@ class Logger:
         self.table_name = table_name
 
     SCHEMA = StructType([
-        StructField("source_catalog_name", StringType(), False),
+        StructField("source_catalog_name", StringType(), True),
         StructField("source_schema_name", StringType(), False),
         StructField("source_table_name", StringType(), False),
         StructField("target_catalog_name", StringType(), False),
