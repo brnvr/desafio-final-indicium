@@ -21,17 +21,18 @@ class Log:
         error (str): An error message, if the ingestion failed, or None, if it
         was successful.
     """
+
     def __init__(
-            self, 
-            target_catalog_name: str,
-            target_schema_name: str,
-            target_table_name: str,
-            source_catalog_name: str, 
-            source_schema_name: str,
-            source_table_name: str, 
-            movements: int = None, 
-            error: str = None
-        ):
+        self,
+        target_catalog_name: str,
+        target_schema_name: str,
+        target_table_name: str,
+        source_catalog_name: str,
+        source_schema_name: str,
+        source_table_name: str,
+        movements: int = None,
+        error: str = None
+    ):
         self.source_catalog_name = source_catalog_name
         self.source_schema_name = source_schema_name
         self.source_table_name = source_table_name
@@ -49,6 +50,7 @@ class Logger:
     Attributes:
        table_name (str): The fully qualified name of the logs table.
     """
+
     def __init__(self, table_name: str):
         self.table_name = table_name
 
