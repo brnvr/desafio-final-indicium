@@ -1,0 +1,68 @@
+resources:
+  jobs:
+    bruno_vieira_adw_job:
+      name: bruno_vieira_adw_job
+
+      email_notifications:
+        on_failure:
+          - bruno.vieira@indicium.tech
+
+      parameters:
+        - name: mssql_host
+          default: 54.160.188.238
+
+        - name: mssql_port
+          default: "4563"
+
+        - name: mssql_database
+          default: AdventureWorks
+
+        - name: ctr_catalog_name
+          default: bruno_vieira_ctr
+
+        - name: raw_catalog_name
+          default: bruno_vieira_raw
+
+        - name: stg_catalog_name
+          default: bruno_vieira_stg
+
+        - name: secret_scope
+          default: bruno_vieira_adw
+
+        - name: run_date
+          default: "{{(job.start_time.[iso_date]}}"
+
+        - name: managed_location
+          default: abfss://ted-desafio-final-lh-data@indstadblake.dfs.core.windows.net/desafio_final_lh
+
+      tasks:
+        - task_key: init
+          existing_cluster_id: 0114-120134-85ri2w59
+          notebook_task:
+            notebook_path:
+              ../src/tasks/init.ipynb
+
+        - task_key: mssql_to_raw
+          existing_cluster_id: 0114-120134-85ri2w59
+          depends_on: 
+            - task_key: init
+          notebook_task:
+            notebook_path: ../src/tasks/mssql_to_raw.ipynb
+
+        - task_key: raw_to_stg
+          existing_cluster_id: 0114-120134-85ri2w59
+          depends_on: 
+            - task_key: mssql_to_raw
+          notebook_task:
+            notebook_path: ../src/tasks/raw_to_stg.ipynb
+
+targets:
+  prod:
+    resources:
+      jobs:
+        bruno_vieira_adw_job:
+          trigger:
+            periodic:
+              cron:
+                expression: "0 6 * * *"
+                timezone: "America/Sao_Paulo"
