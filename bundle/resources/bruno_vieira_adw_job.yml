@@ -62,7 +62,7 @@ targets:
       jobs:
         bruno_vieira_adw_job:
           trigger:
+            # Run periodically only in prod
             periodic:
-              cron:
-                expression: "0 6 * * *"
-                timezone: "America/Sao_Paulo"
+              interval: 1
+              unit: DAYS
