@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
-  setup-databricks-cli:
+  lint-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,18 +19,25 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Move to bundle directory
-        run: cd bundle
-
       - name: Install Flake8
         run: pip install flake8
 
       - name: Run Flake8
-        run: flake8 .
+        run: |
+          cd bundle
+          flake8 .
+
+  deploy-bundle:
+    runs-on: ubuntu-latest
+
+    needs: lint-check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Install Databricks CLI
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 
       - name: Configure Databricks CLI
         run: |
@@ -42,4 +50,6 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy Databricks asset bundle
-        run: databricks bundle deploy --target prod
+        run: |
+          cd bundle
+          databricks bundle deploy --target dev

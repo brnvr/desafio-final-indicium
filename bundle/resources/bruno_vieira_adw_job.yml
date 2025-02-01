@@ -1,7 +1,7 @@
 resources:
   jobs:
-    adventure_works_el_job:
-      name: adventure_works_el_job
+    bruno_vieira_adw_job:
+      name: bruno_vieira_adw_job
 
       email_notifications:
         on_failure:
@@ -60,7 +60,7 @@ targets:
   prod:
     resources:
       jobs:
-        adventure_works_el_job:
+        bruno_vieira_adw_job:
           trigger:
             # Run periodically only in prod
             periodic:
