@@ -70,8 +70,6 @@ class DataLoader(ABC):
 
         delta_table = DeltaTable.forName(spark, target_table)
 
-        print(self.__build_merge_condition__())
-
         return (delta_table.alias("target")
                 .merge(
                 self.df.alias("source"),
