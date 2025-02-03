@@ -16,7 +16,7 @@ A infraestrutura é provisionada por um [asset bundle](https://docs.databricks.c
 - [Zona de controle](#control-zone)
 - [Setup](#setup)
 - [Execução](#running)
-- [API](#api)
+- [API da zona de controle](#control-zone-api)
 
 <div id="pipeline"></div>
 
@@ -212,9 +212,9 @@ O job do ambiente  de produção será iniciado uma vez por dia de forma automá
 
 Para iniciar o job imediatamente pela UI do Databricks, siga as instruções [nesse link](https://learn.microsoft.com/en-us/azure/databricks/jobs/run-now#run-a-job-immediately). É possível também iniciá-lo com parâmetros personalizados, como descrito [aqui](https://learn.microsoft.com/en-us/azure/databricks/jobs/run-now#run-a-job-with-different-parameters).
 
-<div id="api"></div>
+<div id="control-zone-api"></div>
 
-## API
+## API da zona de controle
 
 Uma API opcional está disponível para interagir com a **[zona de controle](#control-zone)**.  Para servir a API localmente, é necessário o [Python 3](https://www.python.org/). Tendo-o instalado, siga as instruções:
 
