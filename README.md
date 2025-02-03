@@ -216,7 +216,7 @@ Para iniciar o job imediatamente pela UI do Databricks, siga as instruções [ne
 
 ## API
 
-Uma API está disponível para interagir com a **[zona de controle](#control-zone)**.  Para servir a API localmente, é necessário ter o [Python 3](https://www.python.org/) instalado. Satisfazendo essa condição, siga as instruções:
+Uma API opcional está disponível para interagir com a **[zona de controle](#control-zone)**.  Para servir a API localmente, é necessário o [Python 3](https://www.python.org/). Tendo-o instalado, siga as instruções:
 
 A partir da raiz do repositório, navegue até a pasta da API:
 
@@ -229,6 +229,13 @@ Crie um ambiente virtual do Python e o inicialize.
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+Crie um arquivo **.env** com as seguintes variáveis:
+
+```bash
+WAREHOUSE_ID  =  "<warehouse_id>"
+DATABRICKS_HOST  =  "<your_databricks_host>"
 ```
 
 Instale os pacotes necessários.
