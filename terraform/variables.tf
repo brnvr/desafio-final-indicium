@@ -1,5 +1,5 @@
 variable "databricks_host" {
-  description = "Host do Databricks"
+  description = "Databricks host"
   type        = string
 }
 
