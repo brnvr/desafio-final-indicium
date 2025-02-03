@@ -9,7 +9,7 @@ from databricks.sdk.errors.platform import PermissionDenied
 load_dotenv()
 
 
-async def verify_token(request: Request, token: str = Header(...)):
+async def verify_token(request: Request, token: str = Header(..., description="Databricks PAT")):
     if not token:
         raise HTTPException(status_code=401, detail="Empty token")
 
