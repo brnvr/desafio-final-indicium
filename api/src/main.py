@@ -25,7 +25,7 @@ async def verify_token(request: Request, token: str = Header(...)):
 
 app = FastAPI(
     title="AdventureWorks EL API",
-    description="""This API interacts with the AventureWorks data ingestion 
+    description="""This API interacts with the AventureWorks data ingestion
     control panel in Databricks.""",
     version="1.0.0",
     dependencies=[Depends(verify_token)]
