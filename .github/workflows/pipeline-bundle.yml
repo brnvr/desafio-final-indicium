@@ -1,4 +1,4 @@
-name: Deploy Databricks asset bundle
+name: Databricks asset bundle CI pipeline
 
 on:
   push:

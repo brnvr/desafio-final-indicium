@@ -1,4 +1,4 @@
-name: Deploy Databricks asset bundle
+name: AdventureWorks API CI pipeline
 
 on:
   push:
