@@ -1,0 +1,28 @@
+name: AdventureWorks API CI pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Flake8
+        run: pip install flake8
+
+      - name: Run Flake8
+        run: |
+          cd api
+          flake8 .
