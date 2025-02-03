@@ -25,7 +25,8 @@ async def verify_token(request: Request, token: str = Header(...)):
 
 app = FastAPI(
     title="AdventureWorks EL API",
-    description="This API interacts with the AventureWorks data ingestion control panel in Databricks.",
+    description="""This API interacts with the AventureWorks data ingestion 
+    control panel in Databricks.""",
     version="1.0.0",
     dependencies=[Depends(verify_token)]
 )
@@ -91,7 +92,7 @@ async def permission_denied_exception_handler(
 
 
 @app.exception_handler(ValueError)
-async def permission_denied_exception_handler(
+async def value_error_denied_exception_handler(
         request: Request, exc: Exception):
     return JSONResponse(
         status_code=400,

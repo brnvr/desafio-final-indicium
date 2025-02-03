@@ -1,6 +1,7 @@
 from databricks.sdk import WorkspaceClient
 from lib.pagination import Paginator
-from databricks.sdk.service.sql import StatementState, StatementParameterListItem
+from databricks.sdk.service.sql import StatementState, \
+StatementParameterListItem
 
 
 class DataIngestionService:
@@ -38,7 +39,7 @@ class DataIngestionService:
         ).get_result()
 
     def update_status(self, schema_name: str, table_name: str, active: bool):
-        statement = f"""
+        statement = """
             UPDATE
                 data_ingestion
             SET
