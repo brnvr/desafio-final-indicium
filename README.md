@@ -22,7 +22,7 @@ A infraestrutura é provisionada por um [asset bundle](https://docs.databricks.c
 
 ## Pipeline
 
-A fonte de dados é o banco [AdventureWorks](https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms), hospedado em um SQL Server remoto. Os dados da camada *sales* devem ser movidos para uma **zona raw** e uma **zona de staging** no workspace do Databricks fornecido, com as devidas tranformações sendo aplicadas entre estas duas camadas.
+A fonte de dados é o banco [AdventureWorks](https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms), hospedado em um SQL Server remoto. Os dados do esquema *sales* devem ser movidos para uma **zona raw** e uma **zona de staging** no workspace do Databricks fornecido, com as devidas tranformações sendo aplicadas entre estas duas camadas.
 
 ```mermaid
 flowchart LR
@@ -35,11 +35,11 @@ flowchart LR
     end
 ```
 
-O fluxo se classifica como uma pipeline EL, pois o carregamento dos dados para a fonte (Databricks) ocorre antes de transformações serem aplicadas. Conforme representado no fluxograma acima, podemo distinguir três camadas:
+O fluxo se classifica como uma pipeline ELT, pois o carregamento dos dados no destino (Databricks) ocorre antes de transformações serem aplicadas. Conforme representado no fluxograma acima, podemo distinguir três camadas:
 
 **1. Fonte de dados:** Contém os dados originais a serem carregados no Databricks.
 
-**2. Zona raw:** A primeira camada de dados carregados no Databricks. Contém dados idênticos, ou tão próximos quanto o possível, àqueles extraídos da fonte. 
+**2. Zona raw:** A primeira camada de dados carregados no Databricks. Contém dados idênticos, ou tão próximos quanto possível, àqueles extraídos da fonte. 
 
 **3. Zona de staging:** Contém dados com transformações leves, a fim de proporcionar uma base segura para posteriores modelagem e análise.
 
@@ -47,7 +47,7 @@ O fluxo se classifica como uma pipeline EL, pois o carregamento dos dados para a
 
 ## Job do Databricks
 
-Na prática, a pipeline é executada pelo job do Databricks **bruno_vieira_adw_job**, que possui a seguinte estrutura de tasks:
+Na prática, a pipeline é executada pelo job **bruno_vieira_adw_job** do Databricks, que possui a seguinte estrutura de tasks:
 
 ```mermaid
 graph LR
@@ -55,7 +55,7 @@ graph LR
 ```
 
 ### init
- Inicializa o job, criando (caso ainda não existam) esquemas e tabelas necessários para sua execução, e também populando tabelas com registros iniciais.
+ Inicializa o job, criando (caso ainda não existam) esquemas e tabelas necessárias para sua execução, e também populando tabelas com um conjunto de registros iniciais.
 
 ### mssql_to_raw
 Move os dados da fonte para a zona raw. Os dados da zona raw devem ser carregados em um catálogo exclusivo no Unity Catalog, definido pelo parâmetro **raw_catalog_name** do job. Por padrão, será utilizado o catálogo **bruno_vieira_raw**.
@@ -70,7 +70,7 @@ Outra transformação que será aplicada automaticamente às tabelas é a renome
 
 Os nomes das tabelas na zona de staging devem ser definidos pelo usuário no notebook **raw_to_stg.ipynb**, [seguindo, de preferência, as convenções de nomes de tabela](#table-name-conventions). Para aplicar demais transformações, tais como renomeações de colunas, conversões de tipos, entre outras, siga as instruções descritas no notebook. 
 
-Assim como os nomes de colunas, os esquemas na zona de staging também se adequarão automaticamente à nomenclatura snake_case.
+Assim como os nomes de colunas, os nomes de esquemas na zona de staging também se adequarão automaticamente à nomenclatura snake_case.
 
 <div id="transformation-conventions"></div>
 
@@ -184,7 +184,7 @@ Para confirmar se o workspace foi configurado corretamente, confira se os catál
 
 ### Asset bundle
 
-O deploy do asset bundle é feito de maneira automatizada por uma pipeline do GitHub Actions. Para sua execução, basta que os [secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions) do GitHub Actions DATABRICKS_HOST e DATABRICKS_TOKEN estejam atribuídos.
+O deploy do asset bundle é feito de maneira automatizada por uma pipeline do GitHub Actions. Para sua execução, basta que os [secrets do GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions) DATABRICKS_HOST e DATABRICKS_TOKEN estejam atribuídos.
 
 - Quando um push na branch **develop** for identificado, o deploy será realizado para o ambiente **dev** (desenvolvimento).
 - Quando um push na branch **main** for identificado, o deploy será realizado para o ambiente **prod** (produção).
@@ -193,7 +193,7 @@ O deploy do asset bundle é feito de maneira automatizada por uma pipeline do Gi
 
 ### Segredos do Databricks
 
-É necessária a definição de alguns segredos do Databricks, no escopo definido pelo parâmetro **secret_scope** do job.
+É necessária a atribuição de alguns segredos do Databricks, no escopo definido pelo parâmetro **secret_scope** do job. Por padrão, este escopo será o **bruno_vieira_adw**.
 
 | Secret | Descrição |
 | -------- | --------- |
@@ -206,7 +206,7 @@ Os segredos podem ser gerenciados pelo Databricks CLI ou pela UI. As instruçõe
 
 ## Execução
 
-O job do ambiente  de produção será iniciado uma vez por dia de forma automática. O job do ambiente de desenvolvimento deve ser iniciado manualmente pelo usuário.
+O job do ambiente  de produção será iniciado uma vez por dia, de forma automática, às 06:00 no horário de Brasília. O job do ambiente de desenvolvimento deve ser iniciado manualmente pelo usuário.
 
 <div id="run-job-instructions"></div>
 
@@ -234,19 +234,14 @@ source .venv/bin/activate
 Crie um arquivo **.env** com as seguintes variáveis:
 
 ```bash
-WAREHOUSE_ID  =  "<warehouse_id>"
-DATABRICKS_HOST  =  "<your_databricks_host>"
+WAREHOUSE_ID = <warehouse_id>
+DATABRICKS_HOST = <your_databricks_host>
 ```
 
 Instale os pacotes necessários.
 
 ```bash
 pip install -r requirements.txt
-```
-Após a instalação, inicie o servidor Uvicorn.
-
-```bash
-uvicorn main:app
 ```
 
 Navegue para o diretório *src* e inicie o servidor Uvicorn.
@@ -256,7 +251,7 @@ cd src
 uvicorn main:app
 ```
 
-Com o servidor iniciado, navegue para http://127.0.0.1:8000/docs para acessar a documentação Swagger da API. Os seguintes endpoints estão disponíveis:
+Com o servidor inicializado, navegue para http://127.0.0.1:8000/docs para acessar a UI do Swagger. Os seguintes endpoints estarão disponíveis:
 
 - **GET /**
 Busca informações das tabelas sendo ingeridas.
