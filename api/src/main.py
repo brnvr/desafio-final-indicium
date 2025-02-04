@@ -53,7 +53,7 @@ def get_logs(request: Request, page: int, page_length: int):
 
 
 @app.patch("/{schema_name}/{table_name}/activate/",
-           summary="Activate ingestion of specified table")
+           summary="Activate ingestion for specified table")
 def activate(request: Request, schema_name: str, table_name: str):
     service = request.state.data_ingestion_service
 
@@ -63,7 +63,7 @@ def activate(request: Request, schema_name: str, table_name: str):
 
 
 @app.patch("/{schema_name}/{table_name}/deactivate/",
-           summary="Deactivate ingestion of specified table")
+           summary="Deactivate ingestion for specified table")
 def deactivate(request: Request, schema_name: str, table_name: str):
     service = request.state.data_ingestion_service
 

@@ -18,7 +18,7 @@ class DataIngestionService:
             table="data_ingestion",
             page_length=page_length,
             page=page,
-            order="schema_name, table_name"
+            order=["schema_name", "table_name"]
         ).get_result()
 
     def get_logs(self, page: int, page_length: int):
@@ -30,12 +30,12 @@ class DataIngestionService:
             table="data_ingestion_log",
             page_length=page_length,
             page=page,
-            order="""
-                target_catalog_name,
-                target_schema_name,
-                target_table_name,
-                ingestion_date DESC
-            """
+            order=[
+                "ingestion_date DESC",
+                "target_catalog_name",
+                "target_schema_name",
+                "target_table_name",
+            ]
         ).get_result()
 
     def update_status(self, schema_name: str, table_name: str, active: bool):
