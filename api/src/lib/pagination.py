@@ -87,10 +87,9 @@ class Paginator:
 
         return int(response.result.data_array[0][0])
 
-    
     def get_result(self):
         """
-        Returns: 
+        Returns:
             PaginationResult: The result of the query.
         """
         self.__execution_tries__ = 0
@@ -119,16 +118,16 @@ class Paginator:
             schema=self.schema,
             statement=statement
         )
-        
+
         if response.status.state == StatementState.FAILED:
             raise RuntimeError(response.status.error)
-        
+
         if response.status.state != StatementState.SUCCEEDED:
             self.__execution_tries__ += 1
 
             if self.__execution_tries__ > 5:
                 raise RuntimeError("Execution could not be completed.")
-            
+
             return self.get_result()
 
         total_results = self.__get_total_results__()

@@ -1,5 +1,6 @@
 from databricks.sdk.service.sql import StatementResponse, ColumnInfo
 
+
 def get_results_dict(response: StatementResponse):
     """
     Gets the results of a StatementResponse as a list of dictionaries in which
@@ -7,7 +8,7 @@ def get_results_dict(response: StatementResponse):
 
     Args:
         response (StatementResponse): The response to get the results from.
-        
+
     Returns:
         list[dict]: The resulting list of dicts.
     """
