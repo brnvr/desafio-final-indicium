@@ -3,8 +3,8 @@ from databricks.sdk.service.sql import StatementResponse, ColumnInfo
 
 def get_results_dict(response: StatementResponse):
     """
-    Returns the results of a StatementResponse as a list of dictionaries in which
-    the keys are the column names.
+    Returns the results of a StatementResponse as a list of dictionaries in
+    which the keys are the column names.
 
     Args:
         response (StatementResponse): The response to get the results from.
