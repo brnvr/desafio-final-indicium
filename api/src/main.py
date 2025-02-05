@@ -35,7 +35,7 @@ app = FastAPI(
 )
 
 
-@app.get("/", summary="Get information about tables in the EL pipeline")
+@app.get("/", summary="Get information on tables in the EL pipeline")
 def get(request: Request, page: int, page_length: int):
     service = request.state.data_ingestion_service
 
