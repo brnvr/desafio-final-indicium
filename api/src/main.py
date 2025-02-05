@@ -9,12 +9,9 @@ from databricks.sdk.errors.platform import PermissionDenied
 load_dotenv()
 
 
-async def set_workspace_client(
+async def init_services(
     request: Request,
-    token: str = Header(
-        ...,
-        description="Databricks PAT"
-    )
+    token: str = Header(..., description="Databricks PAT")
 ):
     if not token:
         raise HTTPException(status_code=401, detail="Empty token")
@@ -34,7 +31,7 @@ app = FastAPI(
     description="""This API interacts with the AventureWorks data ingestion
     control panel in Databricks.""",
     version="1.0.0",
-    dependencies=[Depends(set_workspace_client)]
+    dependencies=[Depends(init_services)]
 )
 
 
