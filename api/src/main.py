@@ -9,7 +9,7 @@ from databricks.sdk.errors.platform import PermissionDenied
 load_dotenv()
 
 
-async def verify_token(
+async def set_workspace_client(
     request: Request,
     token: str = Header(
         ...,
@@ -34,7 +34,7 @@ app = FastAPI(
     description="""This API interacts with the AventureWorks data ingestion
     control panel in Databricks.""",
     version="1.0.0",
-    dependencies=[Depends(verify_token)]
+    dependencies=[Depends(set_workspace_client)]
 )
 
 
