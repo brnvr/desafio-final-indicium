@@ -65,4 +65,3 @@ targets:
           schedule:
             quartz_cron_expression: "0 0 6 * * ?"
             timezone_id: America/Sao_Paulo
-            pause_status: PAUSED
