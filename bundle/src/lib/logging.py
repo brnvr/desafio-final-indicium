@@ -62,7 +62,7 @@ class Logger:
         StructField("target_schema_name", StringType(), False),
         StructField("target_table_name", StringType(), False),
         StructField("error", StringType(), True),
-        StructField("movements", IntegerType(), False),
+        StructField("movements", IntegerType(), True),
     ])
 
     def log(self, logs: list[Log]):
