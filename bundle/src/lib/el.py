@@ -184,7 +184,9 @@ class MSSqlDataLoader(DataLoader):
         table_name: str,
         primary_key: list[str],
         connection_data: SqlConnectionData,
+        partition_column: str,
         selected: list[str] = None,
+        num_partitions: int = 8
     ):
         self.df = None
         self.connection_data = connection_data
@@ -192,16 +194,43 @@ class MSSqlDataLoader(DataLoader):
         self.table_name = table_name
         self.selected = selected
         self.primary_key = primary_key
+        self.num_partitions = num_partitions
+        self.partition_column = partition_column
 
     def __build_dbtable_query__(self, filter: str):
         select = "*" if self.selected is None else ", ".join(self.selected)
         filter = "1 = 1" if filter is None else filter
 
         return f"""
-            (select {select}
-            from {self.schema_name}.{self.table_name}
-            where {filter}) as {self.table_name}
+            (SELECT {select}
+            FROM {self.schema_name}.{self.table_name}
+            WHERE {filter}) AS {self.table_name}
         """
+
+    def __get_partition_bounds__(self, filter: str):
+        filter = "1 = 1" if filter is None else filter
+
+        query = f"""
+            (SELECT
+                MIN({self.partition_column}) AS lower_bound,
+                MAX({self.partition_column}) AS upper_bound
+            FROM {self.schema_name}.{self.table_name}
+            WHERE {filter}) AS partition_bounds"""
+
+        partition_bounds = (spark.read.format("sqlserver")
+                            .option("encrypt", False)
+                            .option("host", self.connection_data.host)
+                            .option("port", self.connection_data.port)
+                            .option("user", self.connection_data.username)
+                            .option("password", self.connection_data.password)
+                            .option("database", self.connection_data.database)
+                            .option("dbtable", query)
+                            .load()
+                            )
+
+        row = partition_bounds.collect()[0]
+
+        return (row["lower_bound"], row["upper_bound"])
 
     def extract(self, filter: str = None):
         """
@@ -214,16 +243,27 @@ class MSSqlDataLoader(DataLoader):
         Returns:
             DataLoader
         """
-        self.df = (spark.read.format("sqlserver")
-                   .option("encrypt", False)
-                   .option("host", self.connection_data.host)
-                   .option("port", self.connection_data.port)
-                   .option("user", self.connection_data.username)
-                   .option("password", self.connection_data.password)
-                   .option("database", self.connection_data.database)
-                   .option("dbtable", self.__build_dbtable_query__(filter))
-                   .load()
-                   )
+        
+        df_reader = (spark.read.format("sqlserver")
+                     .option("encrypt", False)
+                     .option("host", self.connection_data.host)
+                     .option("port", self.connection_data.port)
+                     .option("user", self.connection_data.username)
+                     .option("password", self.connection_data.password)
+                     .option("database", self.connection_data.database)
+                     .option("dbtable", self.__build_dbtable_query__(filter))
+                     )
+
+        if self.partition_column:
+            partition_bounds = self.__get_partition_bounds__(filter)
+
+            df_reader = df_reader \
+                .option("partitionColumn", self.partition_column) \
+                .option("lowerBound", partition_bounds[0]) \
+                .option("upperBound", partition_bounds[1]) \
+                .option("numPartitions", self.num_partitions)
+
+        self.df = df_reader.load()
 
         return self
 

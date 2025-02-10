@@ -1,4 +1,5 @@
 
+
 # Desafio final - Programa Lighthouse
 
 Este repositório contém o projeto resultante do desafio final da trilha de engenharia de dados do Programa Lighthouse, desenvolvido pelo aluno Bruno Gustavo Vieira.
@@ -129,6 +130,8 @@ A ingestão de dados é realizada em grande parte de forma automatizada. A tabel
 | active | boolean | Habilita ou desabilita a ingestão da tabela. | Sim
 | filter | string | Expressão SQL com a condição que será aplicada à consulta de cargas incrementais, ou nulo para ingestão *full*.
 | selected | string | Colunas a serem selecionadas, ou nulo para extração de todas as colunas.
+| partition_column | string | A coluna utilizada no particionamento na extração. Nulo para extração não particionada.
+| num_partitions | int | Número de partições.
 
 ### loading.data_ingestion_log
 
