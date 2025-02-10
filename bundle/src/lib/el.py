@@ -176,6 +176,9 @@ class MSSqlDataLoader(DataLoader):
             SqlConnectionData class.
         selected (list[str]): A list of columns to select, or None for all
             columns.
+        partition_column (str): The name of the column to be used for
+            partitioning. None for no partitioning.
+        num_partitions (int): The number of partitions.
     """
 
     def __init__(
@@ -243,7 +246,7 @@ class MSSqlDataLoader(DataLoader):
         Returns:
             DataLoader
         """
-        
+
         df_reader = (spark.read.format("sqlserver")
                      .option("encrypt", False)
                      .option("host", self.connection_data.host)
